@@ -144,4 +144,33 @@ class Astar:
         sldist = round(math.sqrt(x_dist**2 + y_dist**2), 2)
         node.setHeur(sldist)
 
+
+
+    """
+    viableOptions
+    ===================
+    @author aayushDaftary
+
+    This function is going to evaluate the f(n) values for all next potential nodes in path.
+    """
+    def viableOptions(self, node):
+        i, j = node.getCoords()
+        neighbors = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
+
+        for offset_i, offset_j in neighbors:
+            new_i, new_j = i + offset_i, j + offset_j
+            if 0 <= new_i < len(self.gameBoard) and 0 <= new_j < len(self.gameBoard[0]):
+                if self.gameBoard[new_i][new_j] != 1:
+                    if offset_i == 0 or offset_j == 0:
+                        step_cost = 1 
+                    else:
+                        step_cost = math.sqrt(2)
+
+                    g_n = self.viableOptions[(i, j)] - self.viableOptions.get((new_i, new_j), 0)
+                    self.setHeuristic(Node(new_i, new_j))
+                    f_n = g_n + step_cost + node.getHeur()
+                    self.viableOptions[(new_i, new_j)] = f_n
+        
+        
+
 Astar('Input1.txt')
