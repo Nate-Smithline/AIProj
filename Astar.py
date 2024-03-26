@@ -1,11 +1,43 @@
+import math
 """
 
 """
-
 class ATree:
     def __init__(self):
         self.value = 0
 
+
+
+"""
+Node
+=======
+
+This is a class for each node thatt goes into the subnodes for it as well as heuristic. This node can be seen at multiple places in A* with different path costs and paths
+"""
+class Node:
+    def __init__(self, i, j):
+        self.i = i
+        self.j = j
+        self.heur = 0
+
+    """
+    getCoords
+    =========
+    This is going to return the coordinates of the node
+    """
+    def getCoords(self):
+        return (self.i, self.j)
+    
+    def setHeur(self, sldist):
+        self.heur = sldist
+
+
+"""
+AStar
+=========
+
+This is the class that runs the entire game. It is already incredibly chunky, so will need to be broken apart for simplicity later on
+"""
 class Astar:
     """
     def INIT
@@ -90,5 +122,23 @@ class Astar:
         return False
 
 
+    """
+    getHeuristic
+    ===================
+    @author Nate-Smithline
+
+    This function is going to take a node in Node(i, j) format and return the h(n), or straight line distance to the goal state. It is going to use the pythagorean theorem to do so.
+    """
+    def setHeuristic(self, node):
+        # get coords of node
+        coords = node.getCoords()
+        i = coords[0]
+        j = coords[1]
+
+        # get the straightline dist
+        x_dist = abs(i - self.goalPosition[0])
+        y_dist = abs(j - self.goalPosition[1])
+        sldist = round(math.sqrt(x_dist**2 + y_dist**2), 2)
+        node.setHeur(sldist)
 
 Astar('Input1.txt')
