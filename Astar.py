@@ -7,6 +7,15 @@ class ATree:
         self.value = 0
 
 class Astar:
+    """
+    def INIT
+    gameBoard -- board directly from input file inverted
+    visitedNodes -- lists all nodes that have been visited to block repeated states
+    viableOptions -- dictionary of all options => f(n ) value
+    numVisited -- number of nodes visited in the page
+    currentPosition -- currentPosition
+    goalPosition -- final position to check
+    """
     def __init__(self, filename):
         self.gameBoard = [[0] * 50 for _ in range(30)]
         # will be of type (i, j)
@@ -28,6 +37,11 @@ class Astar:
         # commands
         self.readIn(filename)
 
+
+    """
+    readIn
+    - reads through the input file, sets the current & goal position, and assigns all items in the gameboard
+    """
     def readIn(self, filename):
         file = open(filename, "r")
 
@@ -49,6 +63,17 @@ class Astar:
             start -= 1
             line = file.readline()
 
+    """
+    goalHit
+    
+    Will be run to see at any point if the currentPosition value is the same as the goalPosition value
+    """
+    def goalHit(self):
+        if(self.currentPosition[0] == self.goalPosition[0]) and (self.currentPosition[1] == self.goalPosition[1]):
+            return True
+        else:
+            return False
 
+    
 
 Astar('Input1.txt')
