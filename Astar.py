@@ -37,7 +37,6 @@ class Astar:
         # commands
         self.readIn(filename)
 
-
     """
     readIn
     - reads through the input file, sets the current & goal position, and assigns all items in the gameboard
@@ -65,8 +64,10 @@ class Astar:
 
     """
     goalHit
+    =================
+    @author Nate-Smithline
     
-    Will be run to see at any point if the currentPosition value is the same as the goalPosition value
+    This function checks the currentPosition and runs it against the goalPosition to see if they are matching in values. If so, it will return True, and we can end the play mode
     """
     def goalHit(self):
         if(self.currentPosition[0] == self.goalPosition[0]) and (self.currentPosition[1] == self.goalPosition[1]):
@@ -75,5 +76,19 @@ class Astar:
             return False
 
     
+    """
+    checkVisited
+    ===================
+    @author Nate-Smithline
+
+    This function is going to go through the visitedNodes and see if the currentPosition is in that placed. If so, it will return True, else False
+    """
+    def wasVisited(self):
+        for visitedNode in self.visitedNodes:
+            if(visitedNode[0] == self.currentPosition[0] and visitedNode[1] == self.currentPosition[1]):
+                return True
+        return False
+
+
 
 Astar('Input1.txt')
