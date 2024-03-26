@@ -31,6 +31,9 @@ class Node:
     def setHeur(self, sldist):
         self.heur = sldist
 
+    def getHeur(self):
+        return self.heur
+
 
 """
 AStar
