@@ -78,10 +78,13 @@ class Astar:
 
         self.readIn(filename)
 
+        
         #testing
-        self.getChildren()
-        for i in self.viableOptions:
-            print(str(i.getCoords())+" "+str(i.getF()))
+        self.play()
+        print("CURRENT: "+str(self.currentPosition.getCoords()))
+        # self.getChildren()
+        # for i in self.viableOptions:
+            # print(str(i.getCoords())+" "+str(i.getF()))
 
 
     """
@@ -95,6 +98,7 @@ class Astar:
         line = file.readline().split()
         self.currentPosition = Node(None, int(line[0]), int(line[1]))
         self.goalPosition = Node(None, int(line[2]), int(line[3]))
+
 
         #read in rest of board
         line = file.readline()
@@ -131,6 +135,7 @@ class Astar:
     This function is going to go through the visitedNodes and see if the currentPosition is in that placed. If so, it will return True, else False
     """
     def wasVisited(self, tuple=''):
+
         for visitedNode in self.visitedNodes:
             if(visitedNode[0] == tuple[0] and visitedNode[1] == tuple[1]):
                 return True
@@ -192,27 +197,26 @@ class Astar:
     ===================
     """
     def play(self):
-        start_node = Node(self.currentPosition[0], self.currentPosition[1])
-        open = [self.currentPosition]
-        while open:
-            _, current = heapq.heappop(open)
-            if self.goalHit():
-                return current #begin outputting, found goal
-            
-            self.getViableOptions(current)
-            best = float('inf') #positive infinity
-            best_next = None
-            for next_coords, f_n in self.viableOptions.items():
-                if self.wasVisited(next_coords):
-                    continue
-                next = Node(next_coords[0], next_coords[1])
-                if f_n < best:
-                    best = f_n
-                    best_next = next
-            if best_next:
-                heapq.heappush(open, (best, best_next))
-                self.visitedNodes.append(best_next.getCoords())
-        return None
+        while self.goalHit() == False:
+            self.getChildren()
+
+            #find best node
+            min_f = float('inf')
+            indx = 0
+            best_Node = None
+            for node_indx in range(len(self.viableOptions)):
+                node = self.viableOptions[node_indx]
+                f = node.getF()
+                print(str(node.getCoords())+" "+str(f))
+                if(f < min_f):
+                    min_f = f
+                    indx = node_indx
+                    best_Node = node
+
+
+            self.viableOptions.pop(indx)
+            self.visitedNodes.append(best_Node.getCoords())
+            self.currentPosition = best_Node
 
         
         
