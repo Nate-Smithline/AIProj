@@ -34,6 +34,7 @@ class Node:
     
     def setG(self, g):
         self.g = g
+        # print("G CHANGE: "+str(g)+" "+str(self.g))
         self.f = self.g + self.h
 
     def getG(self):
@@ -82,9 +83,13 @@ class Astar:
         #testing
         self.play()
         print("CURRENT: "+str(self.currentPosition.getCoords()))
-        # self.getChildren()
-        # for i in self.viableOptions:
-            # print(str(i.getCoords())+" "+str(i.getF()))
+
+        count = 0
+        while(self.currentPosition.getParent() != None):
+            count += 1
+            self.currentPosition = self.currentPosition.getParent()
+
+        print(count)
 
 
     """
@@ -184,10 +189,12 @@ class Astar:
                         stepCost = math.sqrt(2)
 
                     parentCost = self.currentPosition.getG()
+
                     nodeCost = stepCost + parentCost
 
                     newNode = Node(self.currentPosition, new_i, new_j)
-                    newNode.setG = nodeCost
+                    newNode.setG(nodeCost)
+                    # print(str(parentCost)+" "+str(nodeCost)+" "+str(newNode.getG()))
                     self.setHeuristic(newNode)
 
                     self.viableOptions.append(newNode)
@@ -207,18 +214,15 @@ class Astar:
             for node_indx in range(len(self.viableOptions)):
                 node = self.viableOptions[node_indx]
                 f = node.getF()
-                print(str(node.getCoords())+" "+str(f))
                 if(f < min_f):
                     min_f = f
                     indx = node_indx
                     best_Node = node
-
-
+            
             self.viableOptions.pop(indx)
+
             self.visitedNodes.append(best_Node.getCoords())
             self.currentPosition = best_Node
-
-        
         
 
 Astar('Input1.txt')
