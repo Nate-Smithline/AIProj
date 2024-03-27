@@ -84,13 +84,6 @@ class Astar:
         self.play()
         print("CURRENT: "+str(self.currentPosition.getCoords()))
 
-        count = 0
-        while(self.currentPosition.getParent() != None):
-            count += 1
-            self.currentPosition = self.currentPosition.getParent()
-
-        print(count)
-
 
     """
     readIn
