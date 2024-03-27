@@ -1,4 +1,5 @@
 import math
+import heapq
 """
 
 """
@@ -160,7 +161,7 @@ class Astar:
         for offset_i, offset_j in neighbors:
             new_i, new_j = i + offset_i, j + offset_j
             if 0 <= new_i < len(self.gameBoard) and 0 <= new_j < len(self.gameBoard[0]):
-                if self.gameBoard[new_i][new_j] != 1:
+                if self.gameBoard[new_i][new_j] != 1 and not self.wasVisited((new_i, new_j)):
                     if offset_i == 0 or offset_j == 0:
                         step_cost = 1 
                     else:
@@ -170,6 +171,35 @@ class Astar:
                     self.setHeuristic(Node(new_i, new_j))
                     f_n = g_n + step_cost + node.getHeur()
                     self.viableOptions[(new_i, new_j)] = f_n
+    
+    """
+    play
+    ===================
+    """
+
+    def play(self):
+        start_node = Node(self.currentPosition[0], self.currentPosition[1])
+        open = [(0, start_node)]
+        while open:
+            _, current = heapq.heappop(open)
+            if self.goalHit(current):
+                return current #begin outputting, found goal
+            
+            self.viableOptions(current)
+            best = float('inf') #positive infinity
+            best_next = None
+            for next_coords, f_n in self.viableOptions.items():
+                if self.wasVisited(next_coords):
+                    continue
+                next = Node(next_coords[0], next_coords[1])
+                if f_n < best:
+                    best = f_n
+                    best_next = next
+            if best_next:
+                heapq.heappush(open, (best, best_next))
+                self.visitedNodes.append(best_next.getCoords())
+        return None
+
         
         
 
