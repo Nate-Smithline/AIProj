@@ -1,39 +1,49 @@
 import math
 import heapq
-"""
-
-"""
-class ATree:
-    def __init__(self):
-        self.value = 0
-
 
 
 """
 Node
 =======
 
-This is a class for each node thatt goes into the subnodes for it as well as heuristic. This node can be seen at multiple places in A* with different path costs and paths
+This is a class for each node that goes into the subnodes for it as well as heuristic. This node can be seen at multiple places in A* with different path costs and paths
 """
 class Node:
-    def __init__(self, i, j):
-        self.i = i
-        self.j = j
-        self.heur = 0
+    def __init__(self, parent, i, j):
+        self.parent = parent
+        self.coords = (i, j)
 
-    """
-    getCoords
-    =========
-    This is going to return the coordinates of the node
-    """
+        #important details
+        self.h = 0
+        self.f = 0
+        self.g = 0
+
+
     def getCoords(self):
-        return (self.i, self.j)
+        return self.coords
     
-    def setHeur(self, sldist):
-        self.heur = sldist
+    def getParent(self):
+        return self.parent
+    
+    def setH(self, h):
+        self.h = h
+        self.f = self.g + self.h
 
-    def getHeur(self):
-        return self.heur
+    def getH(self):
+        return self.h
+    
+    def setG(self, g):
+        self.g = g
+        self.f = self.g + self.h
+
+    def getG(self):
+        return self.g
+    
+    def getF(self):
+        return self.f
+    
+
+
 
 
 """
@@ -54,24 +64,25 @@ class Astar:
     """
     def __init__(self, filename):
         self.gameBoard = [[0] * 50 for _ in range(30)]
-        # will be of type (i, j)
+        # will be of type [(i, j), (i1, j1), etc.]
         self.visitedNodes = []
 
-        # will be of type Node() => f(n) value
-        self.viableOptions = {}
-        self.numVisited = 0
+        # will be of type [Node, Node, etc.]
+        self.viableOptions = []
         
-        # will be of type (i, j)
-        self.currentPosition = ()
+        # will be of type Node
+        self.currentPosition = None
         
-        # will be of type (i, j)
-        self.goalPosition = ()
-        
-        # not sure if necessary, basic linked list/tree
-        self.tree = ATree()
+        # will be of type Node
+        self.goalPosition = None
 
-        # commands
         self.readIn(filename)
+
+        #testing
+        self.getChildren()
+        for i in self.viableOptions:
+            print(str(i.getCoords())+" "+str(i.getF()))
+
 
     """
     readIn
@@ -82,8 +93,8 @@ class Astar:
 
         #isolate the first line and identify curent & goal state
         line = file.readline().split()
-        self.currentPosition = (int(line[0]), int(line[1]))
-        self.goalPosition = (int(line[2]), int(line[3]))
+        self.currentPosition = Node(None, int(line[0]), int(line[1]))
+        self.goalPosition = Node(None, int(line[2]), int(line[3]))
 
         #read in rest of board
         line = file.readline()
@@ -106,7 +117,9 @@ class Astar:
     This function checks the currentPosition and runs it against the goalPosition to see if they are matching in values. If so, it will return True, and we can end the play mode
     """
     def goalHit(self):
-        if(self.currentPosition[0] == self.goalPosition[0]) and (self.currentPosition[1] == self.goalPosition[1]):
+        currentPosCoords = self.currentPosition.getCoords()
+        goalPosCoords = self.goalPosition.getCoords()
+        if(currentPosCoords[0] == goalPosCoords[0]) and (currentPosCoords[1] == goalPosCoords[1]):
             return True
         else:
             return False
@@ -115,16 +128,13 @@ class Astar:
     """
     checkVisited
     ===================
-    @author Nate-Smithline
-
     This function is going to go through the visitedNodes and see if the currentPosition is in that placed. If so, it will return True, else False
     """
-    def wasVisited(self):
+    def wasVisited(self, tuple=''):
         for visitedNode in self.visitedNodes:
-            if(visitedNode[0] == self.currentPosition[0] and visitedNode[1] == self.currentPosition[1]):
+            if(visitedNode[0] == tuple[0] and visitedNode[1] == tuple[1]):
                 return True
         return False
-
 
     """
     getHeuristic
@@ -140,10 +150,11 @@ class Astar:
         j = coords[1]
 
         # get the straightline dist
-        x_dist = abs(i - self.goalPosition[0])
-        y_dist = abs(j - self.goalPosition[1])
+        goalPosCoords = self.goalPosition.getCoords()
+        x_dist = abs(i - goalPosCoords[0])
+        y_dist = abs(j - goalPosCoords[1])
         sldist = round(math.sqrt(x_dist**2 + y_dist**2), 2)
-        node.setHeur(sldist)
+        node.setH(sldist)
 
 
 
@@ -154,8 +165,8 @@ class Astar:
 
     This function is going to evaluate the f(n) values for all next potential nodes in path.
     """
-    def viableOptions(self, node):
-        i, j = node.getCoords()
+    def getChildren(self):
+        i, j = self.currentPosition.getCoords()
         neighbors = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
 
         for offset_i, offset_j in neighbors:
@@ -163,29 +174,32 @@ class Astar:
             if 0 <= new_i < len(self.gameBoard) and 0 <= new_j < len(self.gameBoard[0]):
                 if self.gameBoard[new_i][new_j] != 1 and not self.wasVisited((new_i, new_j)):
                     if offset_i == 0 or offset_j == 0:
-                        step_cost = 1 
+                        stepCost = 1
                     else:
-                        step_cost = math.sqrt(2)
+                        stepCost = math.sqrt(2)
 
-                    g_n = self.viableOptions[(i, j)] - self.viableOptions.get((new_i, new_j), 0)
-                    self.setHeuristic(Node(new_i, new_j))
-                    f_n = g_n + step_cost + node.getHeur()
-                    self.viableOptions[(new_i, new_j)] = f_n
+                    parentCost = self.currentPosition.getG()
+                    nodeCost = stepCost + parentCost
+
+                    newNode = Node(self.currentPosition, new_i, new_j)
+                    newNode.setG = nodeCost
+                    self.setHeuristic(newNode)
+
+                    self.viableOptions.append(newNode)
     
     """
     play
     ===================
     """
-
     def play(self):
         start_node = Node(self.currentPosition[0], self.currentPosition[1])
-        open = [(0, start_node)]
+        open = [self.currentPosition]
         while open:
             _, current = heapq.heappop(open)
-            if self.goalHit(current):
+            if self.goalHit():
                 return current #begin outputting, found goal
             
-            self.viableOptions(current)
+            self.getViableOptions(current)
             best = float('inf') #positive infinity
             best_next = None
             for next_coords, f_n in self.viableOptions.items():
