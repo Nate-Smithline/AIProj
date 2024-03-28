@@ -59,7 +59,7 @@ class Astar:
     currentPosition -- currentPosition
     goalPosition -- final position to check
     """
-    def __init__(self, filename):
+    def __init__(self, input_name, output_name):
         self.gameBoard = [[0] * 50 for _ in range(30)]
         # will be of type [(i, j), (i1, j1), etc.]
         self.visitedNodes = []
@@ -76,12 +76,15 @@ class Astar:
         self.numVisited = 0
 
         #call the readIn function
-        self.readIn(filename)
+        self.readIn(input_name)
 
         #play
         self.play()
 
-        print(self.numVisited)
+        #call the readOut function
+        self.readOut(output_name)
+
+
     """
     readIn
     - reads through the input file, sets the current & goal position, and assigns all items in the gameboard
@@ -200,5 +203,40 @@ class Astar:
             self.currentPosition = best_Node
             print(str(best_Node.getCoords()))
         
+    def readOut(self, filename):
+        file = open(filename, 'a')
 
-Astar('Input2.txt')
+        #delete all file content
+        file.truncate(0)
+
+        #depth level
+
+        #total nodes generated
+
+        #solutions as move pattern
+
+        #f(n) of each node in solution
+
+        #gameboard reproduced
+        for row in range(len(self.gameBoard)-1, -1, -1):
+            line = ' '.join(self.gameBoard[row])
+            if(row == 0):
+                end = ''
+            else:
+                end = '\n'
+            file.write(line+end)
+
+
+        # while line:
+        #     numbers = line.split()
+            
+        #     for number_indx in range(len(numbers)):
+        #         number = numbers[number_indx]
+        #         self.gameBoard[start][number_indx] = number
+
+        #     start -= 1
+        #     line = file.readline()
+
+
+
+Astar('Input2.txt', 'Input2Output.txt')
