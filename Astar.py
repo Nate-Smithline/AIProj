@@ -78,6 +78,9 @@ class Astar:
         #call the readIn function
         self.readIn(input_name)
 
+        #number of nodes generated
+        self.numGenerated = 0
+
         #play
         self.play()
 
@@ -96,6 +99,7 @@ class Astar:
         line = file.readline().split()
         self.currentPosition = Node(None, int(line[0]), int(line[1]))
         self.goalPosition = Node(None, int(line[2]), int(line[3]))
+        self.numGenerated = 1
 
         #read in rest of board
         line = file.readline()
@@ -175,6 +179,7 @@ class Astar:
                     nodeCost = stepCost + parentCost
                     newNode = Node(self.currentPosition, new_i, new_j)
                     newNode.setG(nodeCost)
+                    self.numGenerated += 1
                     self.setHeuristic(newNode)
                     self.viableOptions.append(newNode)
     
@@ -212,6 +217,7 @@ class Astar:
         #depth level
 
         #total nodes generated
+        file.write(str(self.numGenerated)+'\n')
 
         #solutions as move pattern
 
