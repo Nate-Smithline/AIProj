@@ -166,7 +166,7 @@ class Astar:
         neighbors = [(1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1), (0,-1), (1,-1)]
         for move_i, move_j in neighbors:
             new_i, new_j = i + move_i, j + move_j
-            if 0 <= new_i < len(self.gameBoard) and 0 <= new_j < len(self.gameBoard[0]):
+            if 0 <= new_i < len(self.gameBoard[0]) and 0 <= new_j < len(self.gameBoard):
                 if int(self.gameBoard[new_j][new_i]) != 1 and not self.wasVisited((new_i, new_j)):
                     #horizontal or vertical move
                     if move_i == 0 or move_j == 0:
@@ -232,7 +232,9 @@ class Astar:
             diff_j = mcoords[1] - pcoords[1]
 
             mves.append(str(mve_vals[diff_i][diff_j]))
-
+            i, j = self.currentPosition.getCoords()
+            if self.goalHit() == False:
+                self.gameBoard[j][i] = 4
             self.currentPosition = self.currentPosition.getParent()
 
         #A: depth level
@@ -251,7 +253,8 @@ class Astar:
 
         #E: gameboard reproduced
         for row in range(len(self.gameBoard)-1, -1, -1):
-            line = ' '.join(self.gameBoard[row])
+            #line = ' '.join(self.gameBoard[row])
+            line = ' '.join(map(str, self.gameBoard[row]))
             if(row == 0):
                 end = ''
             else:
@@ -260,4 +263,4 @@ class Astar:
 
 
 
-Astar('Input2.txt', 'Input2Output.txt')
+Astar('Input3.txt', 'Input3Output.txt')
