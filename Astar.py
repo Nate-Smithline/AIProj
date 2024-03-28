@@ -31,7 +31,6 @@ class Node:
     
     def setG(self, g):
         self.g = g
-        # print("G CHANGE: "+str(g)+" "+str(self.g))
         self.f = self.g + self.h
 
     def getG(self):
@@ -132,7 +131,7 @@ class Astar:
     ===================
     This function is going to go through the visitedNodes and see if the currentPosition is in that placed. If so, it will return True, else False
     """
-    def wasVisited(self, tuple=''):
+    def wasVisited(self, tuple):
 
         for visitedNode in self.visitedNodes:
             if(visitedNode[0] == tuple[0] and visitedNode[1] == tuple[1]):
@@ -168,7 +167,7 @@ class Astar:
         for move_i, move_j in neighbors:
             new_i, new_j = i + move_i, j + move_j
             if 0 <= new_i < len(self.gameBoard) and 0 <= new_j < len(self.gameBoard[0]):
-                if self.gameBoard[new_i][new_j] != '1' and not self.wasVisited((new_i, new_j)):
+                if int(self.gameBoard[new_j][new_i]) != 1 and not self.wasVisited((new_i, new_j)):
                     #horizontal or vertical move
                     if move_i == 0 or move_j == 0:
                         stepCost = 1
@@ -190,7 +189,6 @@ class Astar:
     def play(self):
         while self.goalHit() == False:
             self.numVisited += 1
-            self.viableOptions = []
             self.getChildren()
             #find best node
             min_f = float('inf')
@@ -198,15 +196,18 @@ class Astar:
             best_Node = None
             for node_indx in range(len(self.viableOptions)):
                 node = self.viableOptions[node_indx]
+
+                if(self.wasVisited(node.getCoords())):
+                   continue
+
                 f = node.getF()
                 if(f < min_f):
                     min_f = f
                     indx = node_indx
                     best_Node = node
-            self.viableOptions.pop(indx)
+
             self.visitedNodes.append(best_Node.getCoords())
             self.currentPosition = best_Node
-            print(str(best_Node.getCoords()))
         
     def readOut(self, filename):
         file = open(filename, 'a')
@@ -221,6 +222,7 @@ class Astar:
         mves = []
 
         while self.currentPosition.getParent() != None:
+            
             depth_level += 1
             f_ns.append(str(self.currentPosition.getF()))
             
@@ -228,6 +230,7 @@ class Astar:
             pcoords = self.currentPosition.getParent().getCoords()
             diff_i = mcoords[0] - pcoords[0]
             diff_j = mcoords[1] - pcoords[1]
+
             mves.append(str(mve_vals[diff_i][diff_j]))
 
             self.currentPosition = self.currentPosition.getParent()
@@ -239,9 +242,11 @@ class Astar:
         file.write(str(self.numGenerated)+'\n')
 
         #C: solutions as move pattern
+        mves.reverse()
         file.write(' '.join(mves)+'\n')
 
         #D: f(n) of each node in solution
+        f_ns.reverse()
         file.write(' '.join(f_ns)+'\n')
 
         #E: gameboard reproduced
