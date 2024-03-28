@@ -73,14 +73,15 @@ class Astar:
         # will be of type Node
         self.goalPosition = None
 
+        self.numVisited = 0
+
+        #call the readIn function
         self.readIn(filename)
 
-        
-        #testing
+        #play
         self.play()
-        print("CURRENT: "+str(self.currentPosition.getCoords()))
 
-
+        print(self.numVisited)
     """
     readIn
     - reads through the input file, sets the current & goal position, and assigns all items in the gameboard
@@ -160,7 +161,7 @@ class Astar:
         for move_i, move_j in neighbors:
             new_i, new_j = i + move_i, j + move_j
             if 0 <= new_i < len(self.gameBoard) and 0 <= new_j < len(self.gameBoard[0]):
-                if self.gameBoard[new_i][new_j] != 1 and not self.wasVisited((new_i, new_j)):
+                if self.gameBoard[new_i][new_j] != '1' and not self.wasVisited((new_i, new_j)):
                     #horizontal or vertical move
                     if move_i == 0 or move_j == 0:
                         stepCost = 1
@@ -171,7 +172,6 @@ class Astar:
                     nodeCost = stepCost + parentCost
                     newNode = Node(self.currentPosition, new_i, new_j)
                     newNode.setG(nodeCost)
-                    # print(str(parentCost)+" "+str(nodeCost)+" "+str(newNode.getG()))
                     self.setHeuristic(newNode)
                     self.viableOptions.append(newNode)
     
@@ -181,6 +181,7 @@ class Astar:
     """
     def play(self):
         while self.goalHit() == False:
+            self.numVisited += 1
             self.viableOptions = []
             self.getChildren()
             #find best node
