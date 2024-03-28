@@ -1,11 +1,8 @@
 import math
-import heapq
-
 
 """
 Node
 =======
-
 This is a class for each node that goes into the subnodes for it as well as heuristic. This node can be seen at multiple places in A* with different path costs and paths
 """
 class Node:
@@ -50,7 +47,6 @@ class Node:
 """
 AStar
 =========
-
 This is the class that runs the entire game. It is already incredibly chunky, so will need to be broken apart for simplicity later on
 """
 class Astar:
@@ -97,7 +93,6 @@ class Astar:
         self.currentPosition = Node(None, int(line[0]), int(line[1]))
         self.goalPosition = Node(None, int(line[2]), int(line[3]))
 
-
         #read in rest of board
         line = file.readline()
         start = 29
@@ -113,9 +108,7 @@ class Astar:
 
     """
     goalHit
-    =================
-    @author Nate-Smithline
-    
+    =================    
     This function checks the currentPosition and runs it against the goalPosition to see if they are matching in values. If so, it will return True, and we can end the play mode
     """
     def goalHit(self):
@@ -125,7 +118,6 @@ class Astar:
             return True
         else:
             return False
-
     
     """
     checkVisited
@@ -142,8 +134,6 @@ class Astar:
     """
     getHeuristic
     ===================
-    @author Nate-Smithline
-
     This function is going to take a node in Node(i, j) format and return the h(n), or straight line distance to the goal state. It is going to use the pythagorean theorem to do so.
     """
     def setHeuristic(self, node):
@@ -159,37 +149,30 @@ class Astar:
         sldist = round(math.sqrt(x_dist**2 + y_dist**2), 2)
         node.setH(sldist)
 
-
-
     """
     viableOptions
     ===================
-    @author aayushDaftary
-
     This function is going to evaluate the f(n) values for all next potential nodes in path.
     """
     def getChildren(self):
         i, j = self.currentPosition.getCoords()
-        neighbors = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
-
-        for offset_i, offset_j in neighbors:
-            new_i, new_j = i + offset_i, j + offset_j
+        neighbors = [(1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1), (0,-1), (1,-1)]
+        for move_i, move_j in neighbors:
+            new_i, new_j = i + move_i, j + move_j
             if 0 <= new_i < len(self.gameBoard) and 0 <= new_j < len(self.gameBoard[0]):
                 if self.gameBoard[new_i][new_j] != 1 and not self.wasVisited((new_i, new_j)):
-                    if offset_i == 0 or offset_j == 0:
+                    #horizontal or vertical move
+                    if move_i == 0 or move_j == 0:
                         stepCost = 1
+                    #diagonal move
                     else:
                         stepCost = math.sqrt(2)
-
                     parentCost = self.currentPosition.getG()
-
                     nodeCost = stepCost + parentCost
-
                     newNode = Node(self.currentPosition, new_i, new_j)
                     newNode.setG(nodeCost)
                     # print(str(parentCost)+" "+str(nodeCost)+" "+str(newNode.getG()))
                     self.setHeuristic(newNode)
-
                     self.viableOptions.append(newNode)
     
     """
@@ -198,8 +181,8 @@ class Astar:
     """
     def play(self):
         while self.goalHit() == False:
+            self.viableOptions = []
             self.getChildren()
-
             #find best node
             min_f = float('inf')
             indx = 0
@@ -211,11 +194,10 @@ class Astar:
                     min_f = f
                     indx = node_indx
                     best_Node = node
-            
             self.viableOptions.pop(indx)
-
             self.visitedNodes.append(best_Node.getCoords())
             self.currentPosition = best_Node
+            print(str(best_Node.getCoords()))
         
 
-Astar('Input1.txt')
+Astar('Input2.txt')
