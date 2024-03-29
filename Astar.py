@@ -16,6 +16,10 @@ class Node:
         self.g = 0
 
 
+    """
+    All functions are getters or setters. The only thing is that once the parent and coordinates are set, they will not need to be reset so there are no more setters on those
+    """
+        
     def getCoords(self):
         return self.coords
     
@@ -186,6 +190,9 @@ class Astar:
     """
     play
     ===================
+    The play function uses all the subfunctions and actually plays the game. 
+    It is going to call the children to get all viable options then find the best node (by min f(n)) and go to that
+    It recurses until the function reaches the end or stops by breaking (which would only happen if no viable path is available)
     """
     def play(self):
         while self.goalHit() == False:
@@ -210,6 +217,14 @@ class Astar:
             self.visitedNodes.append(best_Node.getCoords())
             self.currentPosition = best_Node
         
+
+    """
+    readOut()
+    =================
+    This function is going to take all of the data, extract the important values and read out into the file.
+    - it will loop backwards through the victory route and pick out the depth, f(n)'s, and moves. It will then print those and total generated.
+    Besides that, it will print back out the victory path + the robot path which we established.
+    """
     def readOut(self, filename):
         file = open(filename, 'a')
 
@@ -267,4 +282,4 @@ class Astar:
 
 
 
-Astar('Input1.txt', 'Input1Output.txt')
+Astar('Input3.txt', 'Input3Output.txt')
