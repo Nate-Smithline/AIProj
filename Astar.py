@@ -168,6 +168,7 @@ class Astar:
     """
     def getChildren(self):
         i, j = self.currentPosition.getCoords()
+        #all possible moves
         neighbors = [(1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1), (0,-1), (1,-1)]
         for move_i, move_j in neighbors:
             new_i, new_j = i + move_i, j + move_j
@@ -179,6 +180,7 @@ class Astar:
                     #diagonal move
                     else:
                         stepCost = math.sqrt(2)
+                    #calculates current g(n) based on parent's cost
                     parentCost = self.currentPosition.getG()
                     nodeCost = stepCost + parentCost
                     newNode = Node(self.currentPosition, new_i, new_j)
@@ -202,18 +204,20 @@ class Astar:
             min_f = float('inf')
             indx = 0
             best_Node = None
+            #checks all nodes current position can be moved to
             for node_indx in range(len(self.viableOptions)):
                 node = self.viableOptions[node_indx]
-
+                #skips node if already visited
                 if(self.wasVisited(node.getCoords())):
                    continue
 
                 f = node.getF()
+                #checks for lower score / better option
                 if(f < min_f):
                     min_f = f
                     indx = node_indx
                     best_Node = node
-
+            #moves to best option 
             self.visitedNodes.append(best_Node.getCoords())
             self.currentPosition = best_Node
         
@@ -248,7 +252,9 @@ class Astar:
             diff_j = mcoords[1] - pcoords[1]
 
             mves.append(str(mve_vals[diff_i][diff_j]))
+
             i, j = self.currentPosition.getCoords()
+            #prints path taken using '4'
             if self.goalHit() == False:
                 self.gameBoard[j][i] = 4
             self.currentPosition = self.currentPosition.getParent()
