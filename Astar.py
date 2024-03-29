@@ -99,6 +99,7 @@ class Astar:
         self.currentPosition = Node(None, int(line[0]), int(line[1]))
         self.goalPosition = Node(None, int(line[2]), int(line[3]))
         self.numGenerated = 1
+        self.setHeuristic(self.currentPosition)
 
         #read in rest of board
         line = file.readline()
@@ -236,6 +237,9 @@ class Astar:
             if self.goalHit() == False:
                 self.gameBoard[j][i] = 4
             self.currentPosition = self.currentPosition.getParent()
+        
+        
+        f_ns.append(str(self.currentPosition.getF()))
 
         #A: depth level
         file.write(str(depth_level)+'\n')
@@ -263,4 +267,4 @@ class Astar:
 
 
 
-Astar('Input3.txt', 'Input3Output.txt')
+Astar('Input1.txt', 'Input1Output.txt')
